@@ -1,32 +1,138 @@
 <!doctype html>
-<html lang="pl">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#242424">
-  <title>WM Automation</title>
+  <title>WM Automation — Website coming soon</title>
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 32px 20px; background: #242424; color: #f3f3f3; font-family: Arial, Helvetica, sans-serif; text-align: center; }
-    main { width: min(100%, 720px); }
-    .logo { display: block; width: min(400px, 82vw); height: auto; margin: 0 auto 38px; }
-    .rule { width: 350px; height: 2px; background: #38b6ff; margin: 0 auto 28px; }
-    h1 { margin: 0 0 14px; font-size: clamp(28px, 6vw, 42px); letter-spacing: .02em; }
-    p { margin: 0; color: #c7c7c7; font-size: clamp(16px, 3vw, 19px); line-height: 1.6; }
-    .contact { margin-top: 34px; font-size: 15px; }
-    a { color: #38b6ff; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    footer { margin-top: 44px; color: #888; font-size: 12px; letter-spacing: .12em; }
-  </style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+    background: #242424;
+    color: #f3f3f3;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+  }
+
+  main { width: min(100%, 720px); }
+
+  .languages {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 0 28px;
+  }
+
+  .languages button {
+    padding: 8px 12px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background: transparent;
+    color: #c7c7c7;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .languages button:hover,
+  .languages button[aria-pressed="true"] {
+    border-color: #38b6ff;
+    color: #38b6ff;
+  }
+
+  .languages button:focus-visible {
+    outline: 2px solid #38b6ff;
+    outline-offset: 3px;
+  }
+
+  .logo {
+    display: block;
+    width: min(400px, 82vw);
+    height: auto;
+    margin: 0 auto 38px;
+  }
+
+  .rule {
+    width: 72px;
+    height: 2px;
+    background: #38b6ff;
+    margin: 0 auto 28px;
+  }
+
+  h1 {
+    margin: 0 0 14px;
+    font-size: clamp(28px, 6vw, 42px);
+    letter-spacing: .02em;
+  }
+
+  p {
+    margin: 0;
+    color: #c7c7c7;
+    font-size: clamp(16px, 3vw, 19px);
+    line-height: 1.6;
+  }
+
+  .contact {
+    margin-top: 34px;
+    font-size: 15px;
+  }
+
+  a {
+    color: #38b6ff;
+    text-decoration: none;
+  }
+
+  a:hover { text-decoration: underline; }
+
+  footer {
+    margin-top: 44px;
+    color: #888;
+    font-size: 12px;
+    letter-spacing: .12em;
+  }
+</style>
 </head>
 <body>
   <main>
+    <nav class="languages" aria-label="Choose language">
+      <button type="button" data-language="en" aria-pressed="true">EN</button>
+      <button type="button" data-language="de" aria-pressed="false">DE</button>
+      <button type="button" data-language="pl" aria-pressed="false">PL</button>
+    </nav>
     <img class="logo" src="logo.png" alt="WM Automation">
     <div class="rule" aria-hidden="true"></div>
-    <h1>Strona w budowie</h1>
-    <p>Pracujemy nad nową witryną.<br>Wkrótce wracamy!</p>
+    <h1 data-i18n="title">Website coming soon</h1>
+    <p><span data-i18n="message">We’re working on a new website.<br>We’ll be back soon!</span></p>
     <p class="contact"><a href="mailto:waldemar.mowinski@wmautomation.eu">waldemar.mowinski@wmautomation.eu</a></p>
-    <footer>WM AUTOMATION · PLC PROGRAMMER</footer>
+    <footer data-i18n="footer">WM AUTOMATION · PLC PROGRAMMER</footer>
   </main>
+  <script>
+    const translations = {
+      en: { title: "Website coming soon", message: "We’re working on a new website.<br>We’ll be back soon!", footer: "WM AUTOMATION · PLC PROGRAMMER", nav: "Choose language" },
+      de: { title: "Website im Aufbau", message: "Wir arbeiten an einer neuen Website.<br>Wir sind bald wieder da!", footer: "WM AUTOMATION · SPS-PROGRAMMIERER", nav: "Sprache auswählen" },
+      pl: { title: "Strona w budowie", message: "Pracujemy nad nową witryną.<br>Wkrótce wracamy!", footer: "WM AUTOMATION · PROGRAMISTA PLC", nav: "Wybierz język" }
+    };
+
+    function setLanguage(language) {
+      const selected = translations[language] ? language : "en";
+      document.documentElement.lang = selected;
+      document.querySelector('[aria-label]').setAttribute("aria-label", translations[selected].nav);
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        element.innerHTML = translations[selected][element.dataset.i18n];
+      });
+      document.querySelectorAll("[data-language]").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.language === selected));
+      });
+      try { localStorage.setItem("wm-automation-language", selected); } catch (error) {}
+    }
+
+    document.querySelectorAll("[data-language]").forEach((button) => {
+      button.addEventListener("click", () => setLanguage(button.dataset.language));
+    });
+    setLanguage("en");
+  </script>
 </body>
 </html>
